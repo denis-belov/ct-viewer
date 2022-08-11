@@ -1,0 +1,354 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto');
+
+
+
+html, body {
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	padding: 0;
+	font-family: 'Roboto';
+	font-style: normal;
+	font-size: 18px;
+	overflow: auto;
+	background-color: white;
+	touch-action: none;
+}
+
+.ct_frontend {
+	display: grid;
+	height: 100%;
+	grid-template-areas:
+		"menu_comp1 menu_comp2    menu_comp3"
+		"menu_comp4 canvas_panel canvas_panel"
+		"menu_comp5 canvas_panel canvas_panel";
+
+	grid-gap: 10px;
+
+	justify-items: stretch;
+	align-items: stretch;
+
+	grid-template-columns: 0.5fr 1.25fr 1.25fr;
+	grid-template-rows: 0.5fr 1.25fr 1.25fr;
+
+	&-toogle {
+		position: relative;
+		float: right;
+		margin-right: 5px;
+		width: 50px;
+		height: 28px;
+
+		input:checked + span {
+			background-color: black;
+		}
+
+		:focus + span {
+			box-shadow: 0 0 1px black;
+		}
+
+		:checked + span:before {
+			-webkit-transform: translateX(22px);
+			-ms-transform: translateX(22px);
+			transform: translateX(22px);
+		}
+
+		span {
+			position: absolute;
+			cursor: pointer;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			border-radius: 34px;
+			background-color: white;
+			-webkit-transition: .4s;
+			transition: .4s;
+		}
+
+		span:before {
+			position: absolute;
+			content: '';
+			height: 24px;
+			width: 24px;
+			left: 2px;
+			bottom: 2px;
+			border-radius: 50%;
+			background-color:  #C4C4C4;
+			-webkit-transition: .2s;
+			transition: .2s;
+		}
+	}
+
+		&-title	{
+			display: block;
+			width: 100%;
+			font-weight: 900;
+			padding: 10px 0 0 0 ;
+			text-align: center;
+			letter-spacing: 1px;
+		}
+
+		&-title_with_toogle {
+			display: inline-block;
+			width: 100%;
+			font-weight: 900;
+			padding: 10px 0 10px 0 ;
+			text-align: center;
+			letter-spacing: 1px;
+
+			.ct_frontend-title {
+				display: inline-block;
+				width: auto;
+				transform: translateY(-25%);
+			}
+
+			.ct_frontend-toogle {
+				margin-top: 0%;
+			}
+		}
+
+		&-img_block {
+			display: inline-block;
+			width:80%;
+		}
+
+		&-icon {
+			width: 1em;
+			height: 1em;
+			float: left;
+		}
+
+		&-dropdown {
+			position: relative;
+			display: block;
+			width: 80%;
+			min-height: 25px;
+			left: 50%;
+			margin-top: 5px;
+			margin-right: -50%;
+			transform: translate(-50%, 0);
+
+			min-width: 50%;
+			text-align: center;
+			background-color: #272B32;
+			color: white;
+		}
+
+		&-button {
+			display: block;
+			position: relative;
+			min-width: 30%;
+			left: 50%;
+			padding: 5px;
+			margin-top: 20px;
+			margin-right: -50%;
+			margin-bottom: 10px;
+			overflow: hidden;
+			transform: translate(-50%, 0);
+			background-color: #8F8F8F;
+			color: white;
+			font-weight: 900;
+		}
+
+		&-input {
+			position: relative;
+			margin-top: 5%;
+			margin-right: -50%;
+			transform: translate(-50%, 0);
+			display: block;
+			min-width: 50%;
+		}
+
+		&-instrument
+		{
+			margin-bottom: 10px;
+		}
+
+		&-instrument_box
+		{
+			display: block;
+			resize: none;
+			position: relative;
+			background-color: #8f8f8f;
+			margin: 0px auto 10px auto;
+			padding: 10px;
+			color: rgb(255, 255, 255);
+			font-size: 14;
+		}
+
+
+
+		&-horizontal_slider {
+			margin-left: auto;
+			margin-right: auto;
+			height: 25px;
+			line-height: 25px;
+			min-width: 80%;
+			text-align: center;
+			background-color: #272B32;;
+			cursor: grab;
+			overflow: clip;
+
+			&-thumb
+			{
+				top: 0;
+				bottom: 0;
+				width: 26px;
+				background: #4F5765;
+
+			}
+		}
+
+		&-case_managment {
+			grid-area: menu_comp1;
+			border: solid white(0, 0, 255);
+			background-color: #C4C4C4;
+
+			.ct_frontend-button {
+				width: 50%;
+			}
+		}
+
+		&-files_managment {
+			grid-area: menu_comp1;
+			border: solid white(0, 0, 255);
+			background-color: #C4C4C4;
+
+			.ct_frontend-button {
+				width: auto;
+				margin: 5px;
+				font-size: 12px;
+				white-space: nowrap;
+			}
+		}
+
+		&-visibility_settings {
+			grid-area: menu_comp2;
+			resize: both;
+			overflow: auto;
+			border: solid white(0, 0, 255);
+			background-color: #C4C4C4;
+
+			&-visibility_table	{
+				display: block;
+				position: relative;
+				width: 100%;
+
+				table, th, tr
+				{
+					width: 100%;
+					table-layout: fixed;
+					font-size: 16;
+					background-color: #8F8F8F;
+
+					td
+					{
+						background-color: #C4C4C4;
+						text-align: center;
+					}
+				}
+			}
+		}
+
+		&-view_settings {
+			grid-area: menu_comp3;
+			resize: both;
+			overflow: auto;
+			border: solid white(0, 0, 255);
+			background-color: #C4C4C4;
+
+			&-grid {
+				position: relative;
+				width: 100%;
+				min-height: 50%;
+				display: grid;
+				grid-template-rows: 1fr 1fr;
+				grid-template-columns: 1fr 1fr;
+				place-items: center center;
+				font-size: 18;
+				background-color: #8F8F8F;
+				font-weight: 900;
+
+				span
+				{
+					background-color: #C4C4C4;
+					color:rgb(0, 0, 0);
+					text-align: center;
+					padding: 5px 20px 5px 20px;
+				};
+			}
+		}
+
+		&-segmentation {
+			grid-area: menu_comp4;
+			resize: both;
+			overflow: auto;
+			border: solid white(0, 0, 255);
+			background-color: #C4C4C4;
+			display: block;
+		}
+
+		&-sculpting {
+			grid-area: menu_comp5;
+			resize: both;
+			overflow: auto;
+			border: solid white(0, 0, 255);
+			background-color: #C4C4C4;
+		}
+
+	&-canvas_panel {
+		display: grid;
+		grid-area: canvas_panel;
+		grid-template-areas:
+			"canvas-comp1 canvas-comp2"
+			"canvas-comp3 canvas-comp4"
+		;
+		grid-template-columns: repeat(2, 1fr);
+		grid-template-rows: repeat(2, 1fr);
+		justify-items: stretch;
+		align-items: stretch;
+		grid-gap: 10px;
+
+
+		&-canvas-comp1 {
+			grid-area: canvas-comp1;
+			resize: both;
+			// overflow: auto;
+			overflow: hidden;
+			border: solid rgb(250, 0, 0);
+			background-color: rgb(0, 0, 0);
+			color: black;
+		}
+
+		&-canvas-comp2 {
+			grid-area: canvas-comp2;
+			resize: both;
+			// overflow: auto;
+			overflow: hidden;
+			border: solid rgb(250, 0, 0);
+			background-color: rgb(0, 0, 0);
+			color: black;
+		}
+
+		&-canvas-comp3 {
+			grid-area: canvas-comp3;
+			resize: both;
+			// overflow: auto;
+			overflow: hidden;
+			border: solid rgb(250, 0, 0);
+			background-color: rgb(0, 0, 0);
+			color: black;
+		}
+
+		&-canvas-comp4 {
+			grid-area: canvas-comp4;
+			resize: both;
+			// overflow: auto;
+			overflow: hidden;
+			border: solid rgb(250, 0, 0);
+			background-color: rgb(0, 0, 0);
+			color: black;
+		}
+
+	}
+}

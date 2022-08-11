@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "node-addon-api": "latest",
+    "cmake-js": "latest"
+  },
+  "scripts": {
+    "build": "node node_modules/cmake-js/bin/cmake-js"
+  }
+}

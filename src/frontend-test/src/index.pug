@@ -1,0 +1,21 @@
+html
+	head
+		meta(charset="utf-8")
+		block title
+			title Test
+		meta(name="viewport", content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0")
+		script(src="https://unpkg.com/itk@14.1.1/umd/itk.js")
+
+	body
+
+		.table
+			.row
+				#i.canvas-cell
+				//- #mesh.canvas-cell
+				.canvas-cell
+					canvas#sculpting
+			.row
+				#j.canvas-cell
+				#k.canvas-cell
+
+		input#data-input(type="file")

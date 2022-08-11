@@ -1,0 +1,59 @@
+{
+  "name": "ct-editor",
+  "version": "0.0.1",
+  "author": "Denis Belov",
+  "description": "3D-Smile proprietary application",
+  "main": "src/main.js",
+  "devDependencies": {
+    "electron-forge": "^5.2.4",
+    "electron-prebuilt-compile": "8.2.0"
+  },
+  "dependencies": {
+    "electron-compile": "^6.4.4",
+    "electron-squirrel-startup": "^1.0.0",
+    "chokidar": "latest"
+  },
+  "scripts": {
+    "_install": "cd src/addons/test-cpp && npm install && cd ../../frontend && npm install && cd ../../ && npm install",
+    "build:addon:test-cpp": "cd src/addons/test-cpp && npm run build && cd ../../../",
+    "start:frontend": "cd src/frontend && npm start",
+    "build:frontend": "cd src/frontend && npm run build && cd ../../",
+    "start": "__ELECTRON_LOCAL__=true electron-forge start",
+    "start-win": "set __ELECTRON_LOCAL__=true && electron-forge start",
+    "package": "npm run build:addon:test-cpp && npm run build:frontend && electron-forge package",
+    "make": "electron-forge make",
+    "publish": "electron-forge publish"
+  },
+  "config": {
+    "forge": {
+      "make_targets": {
+        "win32": [
+          "squirrel"
+        ],
+        "darwin": [
+          "zip"
+        ],
+        "linux": [
+          "deb",
+          "rpm"
+        ]
+      },
+      "electronPackagerConfig": {
+        "packageManager": "npm"
+      },
+      "electronWinstallerConfig": {
+        "name": "ct-editor"
+      },
+      "electronInstallerDebian": {},
+      "electronInstallerRedhat": {},
+      "github_repository": {
+        "owner": "",
+        "name": ""
+      },
+      "windowsStoreConfig": {
+        "packageName": "",
+        "name": "ct-editor"
+      }
+    }
+  }
+}
