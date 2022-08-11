@@ -17,10 +17,12 @@ import vtkInteractorStyleImage   from 'vtk.js/Sources/Interaction/Style/Interact
 import ITKHelper                 from 'vtk.js/Sources/Common/DataModel/ITKHelper';
 import vtkPiecewiseFunction      from 'vtk.js/Sources/Common/DataModel/PiecewiseFunction';
 
-import { WebGL } from '../../../../../3d-smile-glkit/src/index';
-// import * as THREE from 'three';
-
 import MarchingCubesWorker from 'worker-loader!../workers/marching-cubes.worker.js';
+
+import { WebGL } from '../../../../../../3d-smile/3d-smile-glkit/src/index';
+import * as THREE from 'three';
+import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
+import SubdivisionModifier from 'three-subdivision-modifier';
 
 
 
@@ -413,80 +415,111 @@ export default async (file) =>
 
 			marching_cubes_worker.onmessage = (message) =>
 			{
-				// let center = [ 0, 0, 0 ];
 
-				// const points = window.__mapper.getInputConnection()().get().points.get().values;
-				const points = message.data.points;
+				// const geometry = BufferGeometryUtils.mergeVertices(new THREE.BoxGeometry(10, 10, 10, 10, 10, 10));
+				// LOG(new THREE.BoxGeometry(10, 10, 10, 10, 10, 10))
+				// LOG(geometry)
 
-				LOG(message.data)
+				const geometry = new THREE.BufferGeometry();
 
-				const cc_points = [];
-				const cc_tri = [];
+				geometry.setAttribute('position', new THREE.BufferAttribute(message.data.points, 3, false));
+				geometry.setIndex(new THREE.BufferAttribute(message.data.polys, 1));
+
+				const geometry2 = BufferGeometryUtils.mergeVertices(geometry);
+
+				LOG(geometry, geometry2)
+
+				// const points = message.data.points;
+				const points = geometry2.attributes.position.array;
+
+				// const cc_points = [];
+				// const cc_tri = [];
 
 				// for (let i = 0; i < points.length; i += 3)
 				// {
-				// 	center[0] += points[i + 0];
-				// 	center[1] += points[i + 1];
-				// 	center[2] += points[i + 2];
+				// 	cc_points.push([ points[i + 0], points[i + 1], points[i + 2] ]);
 				// }
 
-				// center[0] /= points.length / 3;
-				// center[1] /= points.length / 3;
-				// center[2] /= points.length / 3;
+				// // const polys = message.data.polys;
+				const polys = new Uint32Array(geometry2.index.array);
+
+				// // for (let i = 0; i < polys.length; i += 3)
+				// for (let i = 0; i < polys.length; i += 3)
+				// {
+				// 	// cc_tri.push([ polys[i + 1], polys[i + 2], polys[i + 3] ]);
+				// 	cc_tri.push([ polys[i + 0], polys[i + 1], polys[i + 2] ]);
+				// }
+
+				// LOG(polys)
+
+				// const smooth = catmullClark(cc_points, cc_tri, 1, true);
+
+				// LOG(smooth)
+
+
+
+				const divisions = 2;
+				const modifier = new SubdivisionModifier(divisions);
+
+				geometry2.vertices = [];
+				geometry2.faces = [];
 
 				for (let i = 0; i < points.length; i += 3)
 				{
-					// points[i + 0] -= center[0];
-					// points[i + 1] -= center[1];
-					// points[i + 2] -= center[2];
-
-					cc_points.push([ points[i + 0], points[i + 1], points[i + 2] ]);
+					geometry2.vertices.push(new THREE.Vector3(points[i + 0], points[i + 1], points[i + 2]));
 				}
 
-				const _polys = [];
+				// const polys = message.data.polys;
+				// const polys = new Uint32Array(geometry.index.array);
 
-				// const polys = window.__mapper.getInputConnection()().get().polys.get().values;
-				const polys = message.data.polys;
-
+				// for (let i = 0; i < polys.length; i += 3)
 				for (let i = 0; i < polys.length; i += 3)
 				{
-					// _polys.push(polys[i + 1]);
-					// _polys.push(polys[i + 2]);
-					// _polys.push(polys[i + 3]);
-
-					cc_tri.push([ polys[i + 1], polys[i + 2], polys[i + 3] ]);
+					// cc_tri.push([ polys[i + 1], polys[i + 2], polys[i + 3] ]);
+					geometry2.faces.push({ a: polys[i + 0], b: polys[i + 1], c: polys[i + 2] });
 				}
 
-				// window.__mapper.getInputConnection()().get().polys.get().values
+				const _smooth = modifier.modify(geometry2);
 
-				LOG(cc_points, cc_tri)
-
-				const smooth = catmullClark(cc_points, cc_tri, 2, true);
-
-				LOG('smooth', smooth)
+				LOG(geometry2)
 
 				const ppp = [];
-				for (let i = 0; i < smooth.positions.length; ++i)
+				for (let i = 0; i < geometry2.vertices.length; ++i)
 				{
-					ppp.push(smooth.positions[i][0], smooth.positions[i][1], smooth.positions[i][2]);
+					ppp.push(geometry2.vertices[i].x, geometry2.vertices[i].y, geometry2.vertices[i].z);
 				}
 
 				const ttt = [];
-				for (let i = 0; i < smooth.cells.length; ++i)
+				for (let i = 0; i < geometry2.faces.length; ++i)
 				{
-					ttt.push(smooth.cells[i][0], smooth.cells[i][1], smooth.cells[i][2]);
+					ttt.push(geometry2.faces[i].a, geometry2.faces[i].b, geometry2.faces[i].c);
 				}
 
-				LOG('ppp ttt', ppp, ttt)
 
-				window.__renderMesh__(points, new Uint32Array(_polys));
 
-				// window.__renderMesh__(message.data.points, message.data.polys);
+				// const ppp = [];
+				// for (let i = 0; i < smooth.positions.length; ++i)
+				// {
+				// 	ppp.push(smooth.positions[i][0], smooth.positions[i][1], smooth.positions[i][2]);
+				// }
+
+				// const ttt = [];
+				// for (let i = 0; i < smooth.cells.length; ++i)
+				// {
+				// 	ttt.push(smooth.cells[i][0], smooth.cells[i][1], smooth.cells[i][2]);
+				// }
+
+				// LOG(message.data.points, message.data.polys)
+				// LOG(new Float32Array(ppp), new Uint32Array(ttt))
+
+				window.__renderMesh__(new Float32Array(ppp), new Uint32Array(ttt));
+				// window.__renderMesh__(points, polys);
 			};
 
 			window.doMarchingCubes = () =>
 			{
 				LOG('doMarchingCubes')
+				LOG({ spacing: data.getSpacing(), extent: data.getExtent(), data: painter.getOutputData().get().pointData.get().arrays[0].data.getData() })
 				marching_cubes_worker.postMessage({ spacing: data.getSpacing(), extent: data.getExtent(), data: painter.getOutputData().get().pointData.get().arrays[0].data.getData() });
 			};
 
@@ -923,6 +956,8 @@ export default async (file) =>
 				vert_arr2[i / 3] = vert_keys[key].vert_index;
 			}
 
+			LOG(indices)
+
 			const new_indices__ = indices.map((elm) => vert_arr2[elm]);
 
 
@@ -982,11 +1017,13 @@ export default async (file) =>
 
 			// LOG(new_indices)
 
-			const new_pos = new_pos__;
-			// const new_pos = ppp;
-			new_indices = new_indices__;
-			// new_indices = ttt;
+			// const new_pos = new_pos__;
+			const new_pos = vertices;
+			// new_indices = new_indices__;
+			new_indices = indices;
 			const tri = [];
+
+			LOG('JJJ', new_pos, new_pos__, indices, new_indices__)
 
 			for (let i = 0; i < new_indices.length; ++i)
 			{
@@ -999,6 +1036,8 @@ export default async (file) =>
 				// LOG(i / 3, Math.floor(i / 3))
 				// tri[new_indices[i]].push(i / 3);
 			}
+
+			LOG(tri)
 
 			// for (let vertex_index = 0; vertex_index < new_indices.length; vertex_index += 3)
 			// {
@@ -1076,6 +1115,8 @@ export default async (file) =>
 					},
 				);
 			}
+
+			LOG(new_indices)
 
 			vertex_data2 = new Float32Array(vertex_data2);
 			const triangle_data2 = new Float32Array(2048 * 2048 * 4);
@@ -1244,7 +1285,7 @@ export default async (file) =>
 
 			(evt) =>
 			{
-				if (evt.ctrlKey)
+				if (evt.ctrlKey || evt.metaKey)
 				{
 					// LOG(window);
 					// ({ clientX, clientY } = evt);

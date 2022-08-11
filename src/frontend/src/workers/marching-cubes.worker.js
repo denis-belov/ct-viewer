@@ -5,7 +5,7 @@ import vtkImageData          from 'vtk.js/Sources/Common/DataModel/ImageData';
 
 
 
-// vtk.js uses window object
+// vtk.js uses window object.
 global.window = global;
 
 const mapper = vtkMapper.newInstance();
@@ -37,7 +37,7 @@ onmessage = (message) =>
 	mapper.setInputData(marching_cubes.getOutputData());
 
 	const points = mapper.getInputData().get().points.get().values;
-	const polys = mapper.getInputData().get().polys.get().values;
+	const _polys = mapper.getInputData().get().polys.get().values;
 
 	const center = [ 0, 0, 0 ];
 
@@ -59,17 +59,18 @@ onmessage = (message) =>
 		points[i + 2] -= center[2];
 	}
 
-	const _polys = new Uint32Array(polys.length / 4 * 3);
+	const polys = new Uint32Array(_polys.length / 4 * 3);
 
-	for (let i = 0; i < _polys.length; i += 3)
+	for (let i = 0; i < polys.length; i += 3)
 	{
 		const poly_index = i / 3 * 4;
 
-		// (poly_index + 0) is not a point, so start from (poly_index + 1)
-		_polys[i + 0] = polys[poly_index + 1];
-		_polys[i + 1] = polys[poly_index + 2];
-		_polys[i + 2] = polys[poly_index + 3];
+		// (poly_index + 0) is not a vertex index (it is a count of vertex indices in the polygon),
+		// so start from (poly_index + 1).
+		polys[i + 0] = _polys[poly_index + 1];
+		polys[i + 1] = _polys[poly_index + 2];
+		polys[i + 2] = _polys[poly_index + 3];
 	}
 
-	postMessage({ points, polys: _polys });
+	postMessage({ points, polys });
 };
